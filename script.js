@@ -21,6 +21,15 @@ const formBackground = document.getElementById("form-background");
 addBook.addEventListener("click", displayForm);
 bookForm.addEventListener("submit", addToLibrary);
 
+if (JSON.parse(localStorage.getItem('library')) != null) {
+    let items = JSON.parse(localStorage.getItem('library'));
+    for (const item of items) {
+        let newBook = new Book(item.title, item.author, item.pages, item.read);
+        library.push(newBook);
+    }
+}
+displayLibrary(library);
+
 function displayForm() {
     formBackground.style.display = "block";
 }
@@ -33,6 +42,7 @@ function addToLibrary(event) {
     let read = document.getElementById("read").checked;
     let newBook = new Book(title, author, pages, read);
     library.push(newBook);
+    localStorage.setItem('library', JSON.stringify(library));
     formBackground.style.display = "none";
     displayLibrary(library);
     bookForm.reset();
@@ -40,7 +50,7 @@ function addToLibrary(event) {
 
 function displayLibrary(library) {
     container.innerHTML = "";
-    for (let book of library) {
+    library.forEach(book => {
         const div = document.createElement("div");
         container.appendChild(div);
 
@@ -74,15 +84,17 @@ function displayLibrary(library) {
             removeBook(library.indexOf(book));
         });
         div.appendChild(remove);
-    }
+    });
 }
 
 function removeBook(index) {
     library.splice(index, 1);
+    localStorage.setItem('library', JSON.stringify(library));
     displayLibrary(library);
 }
 
 function toggleRead(index) {
     library[index].toggleRead();
+    localStorage.setItem('library', JSON.stringify(library));
     displayLibrary(library);
 }
